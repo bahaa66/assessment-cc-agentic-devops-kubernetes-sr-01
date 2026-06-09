@@ -32,15 +32,25 @@ const IPv4Addr = (props) => {
   };
 
   const displayNetmasks = (netmasks) => {
-    let netmasksElements = [];
-    netmasks.forEach((e, index) => {
-      netmasksElements.push(
+    if (!netmasks || netmasks.length === 0) {
+      return null;
+    }
+
+    return netmasks.map((e, index) => {
+      if (typeof e === "string") {
+        return (
+          <div key={`subnet-error-${index}`} className="subnet-error">
+            {e}
+          </div>
+        );
+      }
+
+      return (
         <div key={`networkAddress-${index}`}>
           {e.networkAddress}/{e.netmask} ({e.count} hosts)
         </div>
       );
     });
-    return netmasksElements;
   };
 
   return (
@@ -132,13 +142,18 @@ const IPv4Addr = (props) => {
         <br />
         {showSubnetting ? (
           <div id="details">
-            max number of subnets: {ipv4.numberOfPossibleSubnets()} with a
-            minimum of 4 addresses (minus network, broadcast, 2 available
-            addresses).
-
             <div>
-              Closest power-of-two: {ipv4.getClosestPowerOfTwo(subnetsNumber)}
+              max number of subnets: {ipv4.numberOfPossibleSubnets()} with a
+              minimum of 4 addresses (minus network, broadcast, 2 available
+              addresses).
             </div>
+            {subnetsNumber > 0 ? (
+              <div>
+                Closest power-of-two: {ipv4.getClosestPowerOfTwo(subnetsNumber)}
+              </div>
+            ) : (
+              <div>Please enter a number of subnets above.</div>
+            )}
             <div id="subnet-input-container">
               <SubnetNumbersInput
                 value={subnetsNumber}
